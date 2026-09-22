@@ -12,7 +12,7 @@ const produits = [
   { id: 5, nom: "Écran", prix: 180, categorie: "informatique", stock: 3 }
 ];
 
-console.log(produits);
+console.log(produits, "\n");
 
 // ===== Exercice 1 =====
 console.log("===== Exercice 1 =====");
@@ -28,7 +28,7 @@ const vendeur = {
     }
 };
 
-console.log(vendeur.adresse.ville);
+console.log(vendeur.adresse.ville, "\n");
 
 
 // ===== Exercice 2 =====
@@ -41,7 +41,7 @@ console.log(email);
 
 const { ville, codePostal } = vendeur.adresse;
 console.log(ville);
-console.log(`Code Postal: ${codePostal}, ville: ${ville}`);
+console.log(`Code Postal: ${codePostal}, ville: ${ville}`, "\n");
 
 // ===== Exercice 3 =====
 console.log("===== Exercice 3 =====");
@@ -55,7 +55,7 @@ const vendeurModifie = {
     }
 };
 console.log(vendeurModifie);
-console.log(vendeur);
+console.log(vendeur, "\n");
 
 // ===== Exercice 4 =====
 console.log("===== Exercice 4 =====");
@@ -75,7 +75,7 @@ console.log(texte);
 const objet = JSON.parse(texte);
 console.log(objet);
 console.log(texte.nom); // un texte n'a pas de propriété nom
-console.log(objet.nom);
+console.log(objet.nom, "\n");
 
 
 // Niveau 2 : Les bases de JavaScript (Une méthode à la fois)
@@ -84,32 +84,32 @@ console.log(objet.nom);
 console.log("===== Exercice 1 =====");
 // Afficher le nom de chaque produit avec forEach.
 produits.forEach((produit) => {
-    console.log(produit.nom);
+    console.log(produit.nom, "\n");
 });
 
 // ===== Exercice 2 =====
 console.log("===== Exercice 2 =====");
 // Crée un tableau contenant uniquement les noms des produits.
 const noms = produits.map((produit) => produit.nom);
-console.log(noms);
+console.log(noms, "\n");
 
 // ===== Exercice 3 =====
 console.log("===== Exercice 3 =====");
 // Crée un tableau des produits de la catégorie "mobilier".
 const mobiliers = produits.filter((produit) => produit.categorie === "mobilier");
-console.log(mobiliers);
+console.log(mobiliers, "\n");
 
 // ===== Exercice 4 =====
 console.log("===== Exercice 4 =====");
 // Trouve le produit dont l'id est 3.
 const produitTrouve = produits.find((produit) => produit.id === 3);
-console.log(produitTrouve);
+console.log(produitTrouve, "\n");
 
 // ===== Exercice 5 =====
 console.log("===== Exercice 5 =====");
 // Vérifie s'il existe au moins un produit en rupture de stock (stock à 0).
 const ruptureDeStock = produits.some((produit) => produit.stock === 0);
-console.log(ruptureDeStock);
+console.log(ruptureDeStock, "\n");
 
 // ===== Exercice 6 =====
 console.log("===== Exercice 6 =====");

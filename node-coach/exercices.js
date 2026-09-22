@@ -117,4 +117,38 @@ console.log("===== Exercice 6 =====");
 const totalStock = produits.reduce((somme, produit) => {
     return somme + (produit.prix * produit.stock);
 }, 0);
-console.log(totalStock);
+console.log(totalStock, "\n");
+
+// Niveau 3 : Les bases de JavaScript (Raisonner et combiner)
+
+// ===== Exercice 1 =====
+console.log("===== Exercice 1 =====");
+// Obtiens les noms des produits informatiques qui sont en stock.
+const informatiqueStock = produits
+  .filter((produit) => produit.categorie === "informatique" && produit.stock > 0)
+  .map((produit) => produit.nom);
+console.log(informatiqueStock, "\n");
+
+// ===== Exercice 2 =====
+console.log("===== Exercice 2 =====");
+// Crée un nouveau tableau où le prix de la Souris passe à 22, sans modifier produits.
+const nouvelleListeProduits = produits.map((produit) =>
+  produit.id === 2 ? { ...produit, prix: 22 } : produit
+);
+console.log(nouvelleListeProduits, "\n");
+
+// ===== Exercice 3 =====
+console.log("===== Exercice 3 =====");
+// Crée un nouveau tableau sans la Chaise.
+const sansChaise = produits.filter((produit) => produit.id !== 3);
+console.log(sansChaise, "\n");
+
+// ===== Exercice 4 =====
+console.log("===== Exercice 4 =====");
+// Crée une version « publique » des produits contenant uniquement nom et prix, et seulement pour les produits en stock.
+const produitsPublics = produits
+  .filter((produit) => produit.stock > 0)
+  .map((produit) => ({ nom: produit.nom, prix: produit.prix })
+);
+console.log(produitsPublique, "\n");
+

@@ -76,3 +76,45 @@ const objet = JSON.parse(texte);
 console.log(objet);
 console.log(texte.nom); // un texte n'a pas de propriété nom
 console.log(objet.nom);
+
+
+// Niveau 2 : Les bases de JavaScript (Une méthode à la fois)
+
+// ===== Exercice 1 =====
+console.log("===== Exercice 1 =====");
+// Afficher le nom de chaque produit avec forEach.
+produits.forEach((produit) => {
+    console.log(produit.nom);
+});
+
+// ===== Exercice 2 =====
+console.log("===== Exercice 2 =====");
+// Crée un tableau contenant uniquement les noms des produits.
+const noms = produits.map((produit) => produit.nom);
+console.log(noms);
+
+// ===== Exercice 3 =====
+console.log("===== Exercice 3 =====");
+// Crée un tableau des produits de la catégorie "mobilier".
+const mobiliers = produits.filter((produit) => produit.categorie === "mobilier");
+console.log(mobiliers);
+
+// ===== Exercice 4 =====
+console.log("===== Exercice 4 =====");
+// Trouve le produit dont l'id est 3.
+const produitTrouve = produits.find((produit) => produit.id === 3);
+console.log(produitTrouve);
+
+// ===== Exercice 5 =====
+console.log("===== Exercice 5 =====");
+// Vérifie s'il existe au moins un produit en rupture de stock (stock à 0).
+const ruptureDeStock = produits.some((produit) => produit.stock === 0);
+console.log(ruptureDeStock);
+
+// ===== Exercice 6 =====
+console.log("===== Exercice 6 =====");
+// Calcule la valeur totale du stock (prix × stock de chaque produit, additionné).
+const totalStock = produits.reduce((somme, produit) => {
+    return somme + (produit.prix * produit.stock);
+}, 0);
+console.log(totalStock);

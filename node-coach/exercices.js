@@ -1,4 +1,7 @@
+// Exercice : cours 0.1
+console.log("Exercice : cours 0.1");
 // Niveau 1 : Les bases de JavaScript (Objets)
+console.log("Niveau 1 : Les bases de JavaScript (Objets)");
 
 // ===== Exercice 0 =====
 console.log("===== Exercice 0 =====");
@@ -11,6 +14,8 @@ const produits = [
   { id: 4, nom: "Lampe", prix: 35, categorie: "mobilier", stock: 8 },
   { id: 5, nom: "Écran", prix: 180, categorie: "informatique", stock: 3 }
 ];
+
+const categories = ["informatique", "mobilier", "jardin", "cuisine"];
 
 console.log(produits, "\n");
 
@@ -79,6 +84,7 @@ console.log(objet.nom, "\n");
 
 
 // Niveau 2 : Les bases de JavaScript (Une méthode à la fois)
+console.log("Niveau 2 : Les bases de JavaScript (Une méthode à la fois)");
 
 // ===== Exercice 1 =====
 console.log("===== Exercice 1 =====");
@@ -120,6 +126,7 @@ const totalStock = produits.reduce((somme, produit) => {
 console.log(totalStock, "\n");
 
 // Niveau 3 : Les bases de JavaScript (Raisonner et combiner)
+console.log("Niveau 3 : Les bases de JavaScript (Raisonner et combiner)");
 
 // ===== Exercice 1 =====
 console.log("===== Exercice 1 =====");
@@ -150,5 +157,86 @@ const produitsPublics = produits
   .filter((produit) => produit.stock > 0)
   .map((produit) => ({ nom: produit.nom, prix: produit.prix })
 );
-console.log(produitsPublique, "\n");
+console.log(produitsPublics, "\n");
 
+// Exercice : cours 0.2
+console.log("Exercice : cours 0.2");
+// Niveau 1 : Les bases de JavaScript (Chercher)
+console.log("Niveau 1 : Les bases de JavaScript (Chercher)");
+
+// ===== Exercice 1 =====
+console.log("===== Exercice 1 =====");
+// Trouve la position de "jardin" dans categories. Puis vérifie si "bureau" est présent.
+const positionJardin = categories.indexOf("jardin");
+console.log(positionJardin);
+const bureauPresent = categories.includes("bureau");
+console.log(bureauPresent);
+
+// ===== Exercice 2 =====
+console.log("===== Exercice 2 =====");
+// Trouve la position du produit dont l'id est 4 dans produits.
+// Que renvoie la même recherche avec l'id 99 ?
+// Pourquoi indexOf ne pourrait-il pas faire ce travail ?
+const positionProduitQuatre = produits.findIndex((produit) => produit.id === 4);
+console.log(positionProduitQuatre);
+const positionNeufNeuf = produits.findIndex((produit) => produit.id === 99);
+console.log(positionNeufNeuf);
+// IndexOf ne prend pas de condition il ne prend que des valeurs. On cherche une valeur exacte.
+
+// ===== Exercice 3 =====
+console.log("===== Exercice 3 =====");
+// Affiche le dernier produit du tableau avec at, puis le dernier produit informatique avec findLast.
+const dernierProduit = produits.at(-1);
+console.log(dernierProduit);
+const dernierProduitInformatique = produits.findLast((produit) => produit.categorie === "informatique");
+console.log(dernierProduitInformatique);
+
+// Niveau 2 : Les bases de JavaScript (Trier)
+console.log("Niveau 2 : Les bases de JavaScript (Trier)");
+
+// ===== Exercice 4 =====
+console.log("===== Exercice 4 =====");
+// Crée parPrixCroissant : les produits du moins cher au plus cher, sans modifier produits, en utilisant sort et une copie.
+// Affiche ensuite produits pour vérifier qu'il n'a pas bougé.
+const parPrixCroissant = [...produits].sort((a, b) => a.prix - b.prix);
+console.log(parPrixCroissant);
+console.log(produits);
+
+// ===== Exercice 5 =====
+console.log("===== Exercice 5 =====");
+// Crée parPrixDecroissant avec toSorted.
+const parPrixDecroissant = produits.toSorted((a, b) => b.prix - a.prix);
+console.log(parPrixDecroissant);
+
+// ===== Exercice 6 =====
+console.log("===== Exercice 6 =====");
+// Crée parStock : les produits triés du plus gros stock au plus petit.
+const parStock = produits.toSorted((a, b) => b.stock - a.stock);
+console.log(parStock);
+
+// ===== Exercice 7 =====
+console.log("===== Exercice 7 =====");
+// Crée parNom : les produits triés par ordre alphabétique de leur nom.
+const parNom = [...produits].sort((a, b) => a.nom.localeCompare(b.nom));
+console.log(parNom);
+
+// Niveau 3 : Les bases de JavaScript (Découper et assembler)
+console.log("Niveau 3 : Les bases de JavaScript (Découper et assembler)");
+
+// ===== Exercice 8 =====
+console.log("===== Exercice 8 =====");
+// Avec slice, obtiens les 3 premiers produits, puis uniquement la Chaise et la Lampe, puis les 2 derniers.
+const troisPremier = produits.slice(0, 3);
+console.log(troisPremier);
+const chaiseLampe = produits.slice(2, 4);
+console.log(chaiseLampe);
+const lesDeuxDerniers = produits.slice(3);
+console.log(lesDeuxDerniers);
+
+// ===== Exercice 9 =====
+console.log("===== Exercice 9 =====");
+// Affiche le texte Clavier, Souris, Chaise, Lampe, Écran à partir de produits. Indice : il faut deux méthodes.
+const listeNoms = produits
+  .map((produit) => produit.nom)
+  .join(", ");
+console.log(listeNoms);

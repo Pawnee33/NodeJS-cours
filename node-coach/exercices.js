@@ -240,3 +240,77 @@ const listeNoms = produits
   .map((produit) => produit.nom)
   .join(", ");
 console.log(listeNoms);
+
+// ===== Exercice 10 =====
+console.log("===== Exercice 10 =====");
+// Écris une fonction getPage(numeroPage, parPage) qui renvoie les produits d'une page.
+// Avec 2 produits par page : la page 1 donne Clavier et Souris,
+// la page 2 donne Chaise et Lampe, la page 3 donne Écran seul.
+
+function getPage(numeroPage, parPage) {
+  const debut = (numeroPage - 1) * parPage;
+  const fin = debut + parPage;
+  return produits.slice(debut, fin);
+}
+console.log(getPage(1, 3)); // on dit à cette page je veux tant de produits
+console.log(getPage(2, 3));
+console.log(getPage(1, 2));
+
+// ===== Exercice 11 =====
+console.log("===== Exercice 11 =====");
+// Voici les ventes de trois jours :
+// const ventes = [[49, 25], [120], [35, 180, 49]];.
+// Obtiens un seul tableau avec toutes les ventes, puis calcule le total avec une méthode du cours 0.2.
+const ventes = [[49, 25], [120], [35, 180, 49]];
+const totalVentes = ventes
+  .flat()
+  .reduce((total, vente) => {
+    return total + vente;
+  }, 0);
+console.log(totalVentes);
+
+// Niveau 4 : Les bases de JavaScript (Ajouter et retirer)
+console.log("Niveau 4 : Les bases de JavaScript (Ajouter et retirer)");
+
+// ===== Exercice 12 =====
+console.log("===== Exercice 12 =====");
+// Crée const panier = [];. Effectue ces opérations dans l'ordre, en écrivant pour chacune ta prédiction en commentaire,
+// puis en affichant panier pour vérifier :
+// * ajoute "Clavier", puis "Souris", puis "Lampe" à la fin ;
+// * retire le dernier élément et affiche aussi l'élément retiré ;
+// * ajoute "Écran" au début ;
+// * retire le premier élément ;
+// * ajoute "Chaise" et "Tapis" à la fin, puis, avec splice, retire "Souris" et "Chaise" (vérifie d'abord leurs positions).
+// Contenu final attendu : [ 'Clavier', 'Tapis' ].
+const panier = [];
+panier.push("Clavier", "Souris", "Lampe");
+console.log(panier);
+const retire = panier.pop();
+console.log(retire);
+panier.unshift("Écran");
+console.log(panier);
+const retirePremierElement = panier.shift();
+console.log(retirePremierElement);
+console.log(panier);
+panier.push("Chaise", "Tapis");
+console.log(panier);
+panier.splice(1, 2);
+console.log(panier);
+
+// Niveau 5 : Les bases de JavaScript (Combiner)
+console.log("Niveau 5 : Les bases de JavaScript (Combiner)");
+
+// ===== Exercice 13 =====
+console.log("===== Exercice 13 =====");
+// Obtiens le texte des noms des 3 produits les plus chers parmi ceux en stock,
+// du plus cher au moins cher, séparés par des virgules.
+// Écris d'abord les étapes en commentaire.
+// Résultat attendu : Écran, Chaise, Clavier.
+console.log(produits);
+const produitsChers = produits
+  .filter((produit) => produit.stock > 0)
+  .sort((a, b) => b.prix - a.prix)
+  .slice(0, 3)
+  .map((produit) => produit.nom)
+  .join(", ");
+  console.log(produitsChers);

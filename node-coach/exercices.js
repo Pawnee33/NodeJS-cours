@@ -314,3 +314,16 @@ const produitsChers = produits
   .map((produit) => produit.nom)
   .join(", ");
   console.log(produitsChers);
+
+  // ===== Exercice 14 =====
+console.log("===== Exercice 14 =====");
+// Le piège de sort. À faire en dernier, car il modifie produits. Écris :
+const triParPrix = produits.sort((a, b) => a.prix - b.prix);
+console.log(produits);
+console.log(triParPrix === produits);
+//Que constates-tu en affichant produits ? Explique ce qui s'est passé. 
+// Puis ajoute console.log(triParPrix === produits); :
+// que renvoie cette ligne, et qu'est-ce que ça t'apprend sur ce que sort renvoie ?
+// La conclusion sur sort est donc double :
+// il trie le tableau d'origine (ce que tu as dit),
+// et il renvoie ce même tableau, pas une copie.

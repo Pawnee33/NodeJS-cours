@@ -58,10 +58,10 @@ async function getPrix() {
   return 49;
 }
  
-const prix = getPrix();
-console.log(prix);
+//const prix = getPrix();
+//console.log(prix);
 // Retourne le résultat envloppé dans une promesse (Promis { 49 })
-const prix1 = await getPrix();
+//const prix1 = await getPrix();
 getPrix().then((prix1) => console.log(prix1));
 // Pour afficher le résultat il faut l'ouvrir dans une fonction async,
 // si on oubli le "await" et "then" ça s'affichera avec enveloppé dans "Promise".
@@ -234,3 +234,106 @@ async function recupereProduits() {
 }
 
 recupereProduits();
+
+// ===== Exercice 11 =====
+console.log("===== Exercice 11 =====");
+// Récupère maintenant les produits 1 et 5 en même temps avec Promise.all.
+// Mesure les deux versions (exercice 10 et 11) avec console.time et compare les durées.
+// Explique la différence.
+async function recupereProduits2() {
+  try {
+    console.time("à la suite");
+    const produit1 = await getProduitPromesse(1);
+    const produit5 = await getProduitPromesse(5);
+    console.log(produit1.prix + produit5.prix);
+    console.timeEnd("à la suite");
+    console.time("en même temps");
+    const [article1, article5] = await Promise.all([getProduitPromesse(1), getProduitPromesse(5)]);
+    console.log(article1.prix + article5.prix);
+    console.timeEnd("en même temps");
+  } catch (erreur) {
+    console.log("Problème :", erreur.message);
+  } finally {
+    console.log("Recherche terminé");
+  }
+}
+
+recupereProduits2();
+
+// Niveau 5 : Les bases de JavaScript asynchrone (simuler une API)
+console.log("Niveau 5 : Les bases de JavaScript asynchrone (simuler une API)");
+
+const utilisateurs = [
+  { id: 1, nom: "Alice" },
+  { id: 2, nom: "Bob" }
+];
+ 
+const commandes = [
+  { id: 101, userId: 1, montant: 49 },
+  { id: 102, userId: 2, montant: 120 },
+  { id: 103, userId: 1, montant: 35 },
+  { id: 104, userId: 1, montant: 180 }
+];
+
+
+// ===== Exercice 12 =====
+console.log("===== Exercice 12 =====");
+// Écris getUtilisateur(id) : renvoie une promesse qui,
+// au bout de 500 ms, se tient avec l'utilisateur,
+// ou est rompue avec l'erreur "Utilisateur introuvable".
+function getUtilisateur(id) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const utilisateurRecherche = utilisateurs.find((utilisateur) => utilisateur.id === id);
+      if (!utilisateurRecherche) {
+        reject(new Error("Utilisateur introuvable"));
+        return;
+      } 
+      resolve(utilisateurRecherche);
+    }, 500);
+  })
+}
+
+// ===== Exercice 13 =====
+console.log("===== Exercice 13 =====");
+// Écris getCommandesDe(userId) : renvoie une promesse qui,
+// au bout de 500 ms, se tient avec le tableau des commandes de cet utilisateur (éventuellement vide).
+function getCommandesDe(userId) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const utilisateurCommandes = commandes.filter((commande) => commande.userId === userId);
+      resolve(utilisateurCommandes);
+    }, 500);
+  })
+}
+
+// ===== Exercice 14 =====
+console.log("===== Exercice 14 =====");
+// Écris une fonction async afficherTotal(userId) qui récupère l'utilisateur,
+// puis ses commandes, calcule le total dépensé, et affiche par exemple « Alice a dépensé 264 € ».
+// Si l'utilisateur n'existe pas, elle doit afficher un message d'erreur propre au lieu de planter. Teste avec les ids 1, 2 et 3.
+// Pour le défi, commence par écrire les étapes en commentaire.
+// Pose-toi la question : l'appel à getCommandesDe peut-il se faire en même temps que getUtilisateur, ou en dépend-il ?
+// Réponses attendues pour t'autocorriger : Alice a dépensé 264 €, Bob a dépensé 120 €, et l'id 3 doit afficher une erreur.
+async function afficherTotal(userId) {
+  try {
+    const utilisateur = await getUtilisateur(userId);
+    const commandeUtilisateur = await getCommandesDe(userId)
+    const totalCommande = commandeUtilisateur.reduce((total, commande) => {
+      return total + commande.montant;
+    }, 0);
+    console.log(utilisateur); //test debug
+    console.log(commandeUtilisateur); //test debug
+    console.log(totalCommande); //test debug
+    console.log(`${utilisateur.nom} a dépensé ${totalCommande} euros.`);
+  
+  } catch (erreur) {
+    console.log("Problème :", erreur.message);
+  } finally {
+    console.log("Recherche terminé");
+  }
+}
+
+afficherTotal(1)
+afficherTotal(2)
+afficherTotal(3)

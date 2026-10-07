@@ -5,7 +5,7 @@ const supprimerTache = (titre) => {
   taches = taches.filter((tache) => tache !== titre);
 };
 const listerTaches = () => {
-  return taches;
+  return [...taches];
 };
 
 export { ajouterTache, supprimerTache, listerTaches };

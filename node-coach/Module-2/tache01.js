@@ -10,6 +10,7 @@ const ajouter = async (titre) => {
   };
   taches.push(nouvelleTache);
   await ecrireTaches(taches);
+  return nouvelleTache;
 }
 
 const terminer = async (id) => {

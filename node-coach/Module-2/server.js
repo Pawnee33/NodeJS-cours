@@ -1,5 +1,7 @@
 import express from 'express';
 import dayjs from 'dayjs';
+import { ajouter, terminer, supprimer } from "./tache01.js";
+import { ecrireTaches, lireTaches } from './stockage.js';
 
  
 const app = express();
@@ -58,6 +60,29 @@ app.get('/age/:valeur', (requete, response) => {
   }
 
   response.status(200).json({age: age, majeur: majeur});
+});
+
+app.get('/taches', async (requete, response) => {
+  try {
+    const taches = await lireTaches();
+    response.status(200).json(taches);
+  } catch (erreur) {
+    response.status(500).json({ error: "Erreur serveur"});
+  }
+});
+
+app.post('/taches', async (requete, response) => {
+  try {
+    const titre = requete.body.titre;
+    if (!titre) {
+      return response.status(400).json({ error: "Le titre est absent ou vide."});
+    } else {
+      const nouvelleTache = await ajouter(titre);
+      return response.status(201).json(nouvelleTache);
+    }
+  } catch (erreur) {
+    response.status(500).json({ error: "Erreur serveur"});
+  }
 });
 
 app.listen(PORT, () => {

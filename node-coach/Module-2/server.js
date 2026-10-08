@@ -1,13 +1,19 @@
 import express from 'express';
 import dayjs from 'dayjs';
+import cors from 'cors';
 import { ajouter, terminer, supprimer } from "./tache01.js";
 import { ecrireTaches, lireTaches } from './stockage.js';
 
- 
+
 const app = express();
 const PORT = 3001;
 
+app.use((requete, response, next) => {
+  console.log(`${requete.method} ${requete.url}`);
+  next();
+});
 app.use(express.json());
+app.use(cors());
 
 app.get('/', (requete, reponse) => {
   reponse.send('Bonjour !');
@@ -68,6 +74,12 @@ app.get('/age/:valeur', (requete, response) => {
 app.get('/taches', async (requete, response) => {
   try {
     const taches = await lireTaches();
+    const faite = requete.query.faite;
+    if (faite !== undefined) {
+      const vrai = faite === "true";
+      const tachesFiltrees = taches.filter((tache) => tache.faite === vrai);
+      return response.status(200).json(tachesFiltrees)
+    }
     response.status(200).json(taches);
   } catch (erreur) {
     response.status(500).json({ error: "Erreur serveur"});
@@ -133,6 +145,10 @@ app.delete('/taches/:id', async (requete, response) => {
     response.status(500).json({ error: "Erreur serveur"});
   }
 }); // Pour tester curl -i -w "\n" -X DELETE http://localhost:3001/taches/mettre id à supprimer
+
+app.use((requete, response) => {
+  response.status(404).json({ error: "Route inconnue"});
+});
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);

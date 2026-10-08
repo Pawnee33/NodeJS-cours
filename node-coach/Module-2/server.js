@@ -60,7 +60,10 @@ app.get('/age/:valeur', (requete, response) => {
   }
 
   response.status(200).json({age: age, majeur: majeur});
-});
+}); // curl -i -w "\n" http://localhost:3001/age/30     # 200, majeur true
+//curl -i -w "\n" http://localhost:3001/age/15     # 200, majeur false
+//curl -i -w "\n" http://localhost:3001/age/abc    # 400
+//curl -i -w "\n" http://localhost:3001/age/-5     # 400
 
 app.get('/taches', async (requete, response) => {
   try {
@@ -69,7 +72,7 @@ app.get('/taches', async (requete, response) => {
   } catch (erreur) {
     response.status(500).json({ error: "Erreur serveur"});
   }
-});
+}); // Pour tester curl -i -w "\n" http://localhost:3001/taches
 
 app.post('/taches', async (requete, response) => {
   try {
@@ -83,7 +86,53 @@ app.post('/taches', async (requete, response) => {
   } catch (erreur) {
     response.status(500).json({ error: "Erreur serveur"});
   }
-});
+}); // Pour tester curl -i -w "\n" -X POST http://localhost:3001/taches \
+                    //-H "Content-Type: application/json" \
+                    //-d '{"titre":"Mettre l'intituler de la tâche"}'
+
+app.get('/taches/:id', async (requete, response) => {
+  try {
+    const id = requete.params.id;
+    const taches = await lireTaches();
+    const tacheTrouve = taches.find((tache) => tache.id === id);
+    if (!tacheTrouve) {
+      return response.status(404).json({ error: "Tâche introuvable."});
+    }
+    return response.status(200).json(tacheTrouve);
+  } catch (erreur) {
+    response.status(500).json({ error: "Erreur serveur"});
+  }
+}); // Pour tester curl -i -w "\n" http://localhost:3001/taches/mettre id à voir
+
+app.patch('/taches/:id', async (requete, response) => {
+  try {
+    const id = requete.params.id;
+    const taches = await lireTaches();
+    const tacheTrouve = taches.find((tache) => tache.id === id);
+    if (!tacheTrouve) {
+      return response.status(404).json({ error: "Tâche introuvable."});
+    }
+    const tacheModifie = await terminer(id);
+    return response.status(200).json(tacheModifie);
+  } catch (erreur) {
+    response.status(500).json({ error: "Erreur serveur"});
+  }
+}); // Pour tester curl -i -w "\n" -X PATCH http://localhost:3001/taches/mettre id à modifier
+
+app.delete('/taches/:id', async (requete, response) => {
+  try {
+    const id = requete.params.id;
+    const taches = await lireTaches();
+    const tacheTrouve = taches.find((tache) => tache.id === id);
+    if (!tacheTrouve) {
+      return response.status(404).json({ error: "Tâche introuvable"});
+    }
+    const tacheSupprimer = await supprimer(id);
+    return response.status(204).end();
+  } catch {
+    response.status(500).json({ error: "Erreur serveur"});
+  }
+}); // Pour tester curl -i -w "\n" -X DELETE http://localhost:3001/taches/mettre id à supprimer
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);

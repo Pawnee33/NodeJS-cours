@@ -19,6 +19,7 @@ const terminer = async (id) => {
     tache.id === id ? { ...tache, faite: true} : tache
   );
   await ecrireTaches(miseAJourTaches);
+  return miseAJourTaches;
 }
 
 const supprimer = async (id) => {

@@ -6,7 +6,8 @@ function App() {
   useEffect(() => {
     fetch("http://localhost:3001/taches")
     .then((response) => response.json())
-    .then((tachesRecupere) => setTaches(tachesRecupere));
+    .then((tachesRecupere) => setTaches(tachesRecupere))
+    .catch((erreur) => console.log("API injoignable :", erreur.message));
   }, []);
 
   return (

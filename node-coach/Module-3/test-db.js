@@ -1,5 +1,20 @@
 import pool from './db.js';
+import { ajouter, lister, listerALL, terminer, supprimer, supprimerPlusieurs } from './taches.js';
 
 const resultat = await pool.query('SELECT now()');
 console.log(resultat.rows);
+const listertaches01 = await lister("2026-10-13");
+const listertaches02 = await lister("2026-10-14");
+//const ajouterTache01 = await ajouter(3, "Finir le projet TO DO LIST", "2026-11-12");
+//const ajouterTache02 = await ajouter(3, "Finir mon portfolio", "2026-11-23");
+console.log(listertaches01);
+console.log(listertaches02);
+//console.log(ajouterTache01);
+//console.log(ajouterTache02);
+console.log(await terminer(8));
+console.log(await terminer(9999));
+console.log(await supprimerPlusieurs([26, 27, 28, 29, 30, 31]));
+console.log(await supprimer(9999));
+console.log("=================================================================");
+console.log(await listerALL());
 await pool.end();

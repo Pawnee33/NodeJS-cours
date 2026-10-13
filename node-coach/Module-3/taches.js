@@ -13,10 +13,24 @@ const lister = async (datePrevue) => {
   return tachesJour.rows;
 };
 
+const listerID = async (id) => {
+  const tacheID = await pool.query(
+    `SELECT id, titre,
+            to_char(date_prevue, 'YYYY-MM-DD') AS date_prevue,
+            faite, cree_le
+    FROM taches
+    Where id = $1
+    `,
+    [id]
+  );
+  return tacheID.rows[0] ?? null;
+};
+
 const ajouter = async (utilisateurId, titre, datePrevue) => {
   const ajouterTache = await pool.query(
     `INSERT INTO taches (utilisateur_id, titre, date_prevue)
-    VALUES ($1, $2, $3) RETURNING *`,
+    VALUES ($1, $2, $3) RETURNING id, utilisateur_id, titre, faite,
+    to_char(date_prevue, 'YYYY-MM-DD') AS date_prevue`,
     [utilisateurId, titre, datePrevue]
   );
   return ajouterTache.rows[0];
@@ -27,7 +41,8 @@ const terminer = async (id) => {
     `UPDATE taches
     SET faite = true
     WHERE id = $1
-    RETURNING *`,
+    RETURNING id, utilisateur_id, titre, faite,
+    to_char(date_prevue, 'YYYY-MM-DD') AS date_prevue`,
     [id]
   );
   return tacheTerminer.rows[0] ?? null;
@@ -61,4 +76,18 @@ const listerALL = async () => {
   return taches.rows;
 };
 
-export { lister, ajouter, terminer, supprimer, supprimerPlusieurs, listerALL };
+const reporterTache = async (utilisateurId, de, vers) => {
+  const taches = await pool.query(
+    `UPDATE taches
+    SET date_prevue = $3
+    WHERE utilisateur_id = $1
+    AND date_prevue = $2
+    AND faite = false
+    RETURNING id, utilisateur_id, titre, faite,
+    to_char(date_prevue, 'YYYY-MM-DD') AS date_prevue`,
+    [utilisateurId, de, vers]
+  );
+  return taches.rows;
+};
+
+export { lister, ajouter, terminer, supprimer, supprimerPlusieurs, listerALL, listerID, reporterTache };

@@ -1,8 +1,7 @@
 import express from 'express';
-import dayjs from 'dayjs';
 import cors from 'cors';
-import { ajouter, terminer, supprimer } from "./tache01.js";
-import { ecrireTaches, lireTaches } from './stockage.js';
+import { ajouter, terminer, supprimer, lister, listerALL, listerID, reporterTache } from "./taches.js";
+import pool from './db.js';
 
 
 const app = express();
@@ -19,61 +18,9 @@ app.get('/', (requete, reponse) => {
   reponse.send('Bonjour !');
 });
 
-app.get('/ping', (requete, reponse) => {
-  reponse.send('pong');
-});
-
-app.get('/data', (requete, response) => {
-  response.json({ message: dayjs().format('DD/MM/YYYY')})
-});
-
-app.get('/bonjour/:prenom', (requete, response) => {
-  response.json({message: `Bonjour ${requete.params.prenom}`})
-});
- 
-app.get('/calcul', (requete, response) => {
-  const a = Number(requete.query.a);
-  const b = Number(requete.query.b);
-
-  if (Number.isNaN(a) || Number.isNaN(b)) {
-    return response.status(400).json({message: "Veuillez fournir des nombres valides pour 'a' et 'b'."});
-  }
-
-  const resultat = a + b;
-
-  response.json({
-    operation: `${a} + ${b}`,
-    resultat: resultat
-  });
-});
-
-app.post('/echo', (requete, response) => {
-  response.json(requete.body);
-});
-
-//Exercice 7 :
-//"1. Je renvoie 404 car la tâche n°999 n'existe pas."
-//"2. Je renvoie 201 car la tâche est réaliser avec succès."
-//"3. Je renvoie 400 car le client renvoie un titre vide, incomplet alors que c'est obligatoire."
-//"4. Je renvoie 500 car le code a planté."
-//"5. Je renvoie 204 car la tâche est réaliser avec succès."
-
-app.get('/age/:valeur', (requete, response) => {
-  const age = Number(requete.params.valeur);
-  const majeur = age >= 18;
-  if (Number.isNaN(age) || age < 0) {
-    return response.status(400).send("Age doit être un nombre positif et un nombre.");
-  }
-
-  response.status(200).json({age: age, majeur: majeur});
-}); // curl -i -w "\n" http://localhost:3001/age/30     # 200, majeur true
-//curl -i -w "\n" http://localhost:3001/age/15     # 200, majeur false
-//curl -i -w "\n" http://localhost:3001/age/abc    # 400
-//curl -i -w "\n" http://localhost:3001/age/-5     # 400
-
 app.get('/taches', async (requete, response) => {
   try {
-    const taches = await lireTaches();
+    const taches = await listerALL();
     const faite = requete.query.faite;
     if (faite !== undefined) {
       const vrai = faite === "true";
@@ -89,12 +36,19 @@ app.get('/taches', async (requete, response) => {
 app.post('/taches', async (requete, response) => {
   try {
     const titre = requete.body.titre;
+    const utilisateurID = requete.body.utilisateurId;
+    const datePrevue = requete.body.datePrevue;
+    if (!utilisateurID) {
+      return response.status(400).json({ error: "L'ID de l'utilisateur est absent ou vide."});
+    }
     if (!titre) {
       return response.status(400).json({ error: "Le titre est absent ou vide."});
-    } else {
-      const nouvelleTache = await ajouter(titre);
-      return response.status(201).json(nouvelleTache);
     }
+    if (!datePrevue) {
+      return response.status(400).json({ error: "La date est absente."});
+    }
+    const nouvelleTache = await ajouter(utilisateurID, titre, datePrevue);
+    return response.status(201).json(nouvelleTache);
   } catch (erreur) {
     response.status(500).json({ error: "Erreur serveur"});
   }
@@ -102,29 +56,71 @@ app.post('/taches', async (requete, response) => {
                     //-H "Content-Type: application/json" \
                     //-d '{"titre":"Mettre l'intituler de la tâche"}'
 
+
+app.post('/reporter', async (requete, response) => {
+  try {
+    const utilisateurID = requete.body.utilisateurId;
+    const de = requete.body.de;
+    const vers = requete.body.vers;
+    if (!utilisateurID) {
+      return response.status(400).json({ error: "L'ID de l'utilisateur est absent ou vide."});
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(de)) {
+      return response.status(400).json({ error: "La date de doit être au format AAAA-MM-JJ, par exemple 2026-10-13." });
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(vers)) {
+      return response.status(400).json({ error: "La date vers doit être au format AAAA-MM-JJ, par exemple 2026-10-13."});
+    }
+    const tachesReporter = await reporterTache(utilisateurID, de, vers);
+    return response.status(200).json({
+      reportees: tachesReporter.length,
+      taches: tachesReporter
+    });
+  } catch (erreur) {
+    response.status(500).json({ error: "Erreur serveur"});
+  }
+});
+
+
 app.get('/taches/:id', async (requete, response) => {
   try {
-    const id = requete.params.id;
-    const taches = await lireTaches();
-    const tacheTrouve = taches.find((tache) => tache.id === id);
-    if (!tacheTrouve) {
+    const id = Number(requete.params.id);
+    if (Number.isNaN(id) || id < 0) {
+      return response.status(400).json({ error: "ID doit être un nombre positif et un nombre." });
+    }
+    const tache = await listerID(id);
+    if (!tache) {
       return response.status(404).json({ error: "Tâche introuvable."});
     }
-    return response.status(200).json(tacheTrouve);
+    return response.status(200).json(tache);
   } catch (erreur) {
     response.status(500).json({ error: "Erreur serveur"});
   }
 }); // Pour tester curl -i -w "\n" http://localhost:3001/taches/mettre id à voir
 
+app.get('/jours/:date', async (requete, response) => {
+  try {
+    const date = requete.params.date;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return response.status(400).json({ error: "La date doit être au format AAAA-MM-JJ, par exemple 2026-10-13." });
+    }
+    const taches = await lister(date);
+    return response.status(200).json(taches);
+  } catch (erreur) {
+    response.status(500).json({ error: "Erreur serveur"});
+  }
+}); // Pour tester curl -i -w "\n" http://localhost:3001/jours/mettre date à voir
+
 app.patch('/taches/:id', async (requete, response) => {
   try {
-    const id = requete.params.id;
-    const taches = await lireTaches();
-    const tacheTrouve = taches.find((tache) => tache.id === id);
-    if (!tacheTrouve) {
-      return response.status(404).json({ error: "Tâche introuvable."});
+    const id = Number(requete.params.id);
+    if (Number.isNaN(id) || id < 0) {
+      return response.status(400).json({ error: "ID doit être un nombre positif et un nombre." });
     }
     const tacheModifie = await terminer(id);
+    if (!tacheModifie) {
+      return response.status(404).json({ error: "Tâche introuvable."});
+    }
     return response.status(200).json(tacheModifie);
   } catch (erreur) {
     response.status(500).json({ error: "Erreur serveur"});
@@ -133,13 +129,14 @@ app.patch('/taches/:id', async (requete, response) => {
 
 app.delete('/taches/:id', async (requete, response) => {
   try {
-    const id = requete.params.id;
-    const taches = await lireTaches();
-    const tacheTrouve = taches.find((tache) => tache.id === id);
-    if (!tacheTrouve) {
-      return response.status(404).json({ error: "Tâche introuvable"});
+    const id = Number(requete.params.id);
+    if (Number.isNaN(id) || id < 0) {
+      return response.status(400).json({ error: "ID doit être un nombre positif et un nombre." });
     }
     const tacheSupprimer = await supprimer(id);
+    if (!tacheSupprimer) {
+      return response.status(404).json({ error: "Tâche introuvable"});
+    }
     return response.status(204).end();
   } catch {
     response.status(500).json({ error: "Erreur serveur"});
@@ -153,3 +150,4 @@ app.use((requete, response) => {
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur http://localhost:${PORT}`);
 });
+

@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { ajouter, terminer, supprimer, lister, listerALL, listerID, reporterTache } from "./taches.js";
+import { ajouter, terminer, supprimer, lister, listerALL, listerID, reporterTache, compteurTaches } from "./taches.js";
 import pool from './db.js';
 
 
@@ -110,6 +110,28 @@ app.get('/jours/:date', async (requete, response) => {
     response.status(500).json({ error: "Erreur serveur"});
   }
 }); // Pour tester curl -i -w "\n" http://localhost:3001/jours/mettre date à voir
+
+app.get('/calendrier', async (requete, response) => {
+  try {
+    const utilisateurId = Number(requete.query.utilisateurId);
+    if (Number.isNaN(utilisateurId) || utilisateurId < 0) {
+      return response.status(400).json({ error: "L'utilisateur ID doit être un nombre positif et un nombre." });
+    }
+    const debutDate = requete.query.debutDate;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(debutDate)) {
+      return response.status(400).json({ error: "La date doit être au format AAAA-MM-JJ, par exemple 2026-10-13." });
+    }
+    const finDate = requete.query.finDate;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(finDate)) {
+      return response.status(400).json({ error: "La date doit être au format AAAA-MM-JJ, par exemple 2026-10-13." });
+    }
+    const compteurTachesFaites = await compteurTaches(utilisateurId, debutDate, finDate);
+    return response.status(200).json(compteurTachesFaites);
+  } catch (erreur) {
+    console.error(erreur);
+    response.status(500).json({ error: "Erreur serveur"});
+  }
+});
 
 app.patch('/taches/:id', async (requete, response) => {
   try {

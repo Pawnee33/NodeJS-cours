@@ -90,4 +90,19 @@ const reporterTache = async (utilisateurId, de, vers) => {
   return taches.rows;
 };
 
-export { lister, ajouter, terminer, supprimer, supprimerPlusieurs, listerALL, listerID, reporterTache };
+const compteurTaches = async (utilisateurId, debutDate, finDate) => {
+  const tachesFaites = await pool.query(
+    `SELECT to_char(date_prevue, 'YYYY-MM-DD') AS jour,
+    COUNT(*)::int AS total,
+    COUNT(*) FILTER (WHERE faite)::int AS faites
+    FROM taches
+    WHERE utilisateur_id = $1
+    AND date_prevue BETWEEN $2 AND $3
+    GROUP BY date_prevue
+    ORDER BY date_prevue;`,
+    [utilisateurId, debutDate, finDate]
+  );
+  return tachesFaites.rows;
+};
+
+export { lister, ajouter, terminer, supprimer, supprimerPlusieurs, listerALL, listerID, reporterTache, compteurTaches };

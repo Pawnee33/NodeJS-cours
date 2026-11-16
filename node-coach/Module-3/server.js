@@ -3,6 +3,7 @@ import cors from 'cors';
 import { ajouter, terminer, supprimer, lister, listerALL, listerID, reporterTache, compteurTaches } from "./taches.js";
 import pool from './db.js';
 import { schemaNouvelleTache } from './schemas.js';
+import valider from './valider.js';
 
 
 const app = express();
@@ -34,20 +35,11 @@ app.get('/taches', async (requete, response) => {
   }
 }); // Pour tester curl -i -w "\n" http://localhost:3001/taches
 
-app.post('/taches', async (requete, response) => {
-  try {
-    const resultat = schemaNouvelleTache.safeParse(requete.body);
-
-    if(!resultat.success) {
-      return response.status(400).json({
-        erreurs: resultat.error.issues.map((probleme) => ({
-          champ: probleme.path.join('.'),
-          message: probleme.message
-        }))
-      });
-    }
-    
-    const { utilisateurId, titre, datePrevue } = resultat.data;
+app.post('/taches', 
+  valider(schemaNouvelleTache),
+  async (requete, response) => {
+  try {    
+    const { utilisateurId, titre, datePrevue } = requete.body;
     const nouvelleTache = await ajouter(utilisateurId, titre, datePrevue);
     return response.status(201).json(nouvelleTache);
   } catch (erreur) {

@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { ajouter, terminer, supprimer, lister, listerALL, listerID, reporterTache, compteurTaches } from "./taches.js";
 import pool from './db.js';
+import { schemaNouvelleTache } from './schemas.js';
 
 
 const app = express();
@@ -35,19 +36,19 @@ app.get('/taches', async (requete, response) => {
 
 app.post('/taches', async (requete, response) => {
   try {
-    const titre = requete.body.titre;
-    const utilisateurID = requete.body.utilisateurId;
-    const datePrevue = requete.body.datePrevue;
-    if (!utilisateurID) {
-      return response.status(400).json({ error: "L'ID de l'utilisateur est absent ou vide."});
+    const resultat = schemaNouvelleTache.safeParse(requete.body);
+
+    if(!resultat.success) {
+      return response.status(400).json({
+        erreurs: resultat.error.issues.map((probleme) => ({
+          champ: probleme.path.join('.'),
+          message: probleme.message
+        }))
+      });
     }
-    if (!titre) {
-      return response.status(400).json({ error: "Le titre est absent ou vide."});
-    }
-    if (!datePrevue) {
-      return response.status(400).json({ error: "La date est absente."});
-    }
-    const nouvelleTache = await ajouter(utilisateurID, titre, datePrevue);
+    
+    const { utilisateurId, titre, datePrevue } = resultat.data;
+    const nouvelleTache = await ajouter(utilisateurId, titre, datePrevue);
     return response.status(201).json(nouvelleTache);
   } catch (erreur) {
     response.status(500).json({ error: "Erreur serveur"});

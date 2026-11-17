@@ -10,7 +10,11 @@ const valider = (schema, source = 'body') => (requete, response, suite) => {
         });
     }
 
-    requete[source] = resultat.data;
+    Object.defineProperty(requete, source, {
+    value: resultat.data,
+    writable: true,
+    configurable: true
+    });
     suite();
 };
 

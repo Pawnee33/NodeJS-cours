@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { ajouter, terminer, supprimer, lister, listerALL, listerID, reporterTache, compteurTaches } from "./taches.js";
 import pool from './db.js';
-import { schemaNouvelleTache, schemaParamId } from './schemas.js';
+import { schemaNouvelleTache, schemaParamId, schemaParamDate } from './schemas.js';
 import valider from './valider.js';
 
 
@@ -90,12 +90,12 @@ app.get('/taches/:id',
   }
 }); // Pour tester curl -i -w "\n" http://localhost:3001/taches/mettre id à voir
 
-app.get('/jours/:date', async (requete, response) => {
+app.get('/jours/:date',
+  valider(schemaParamDate, 'params'),
+  async (requete, response) => {
   try {
-    const date = requete.params.date;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      return response.status(400).json({ error: "La date doit être au format AAAA-MM-JJ, par exemple 2026-10-13." });
-    }
+    const { date } = requete.params;
+    
     const taches = await lister(date);
     return response.status(200).json(taches);
   } catch (erreur) {

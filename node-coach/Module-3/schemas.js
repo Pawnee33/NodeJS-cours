@@ -25,4 +25,8 @@ const schemaParamId = z.object({
   .positive({message: "L'identifiant doit être positif."})
 });
 
-export { schemaNouvelleTache, schemaParamId };
+const schemaParamDate = z.object({
+  date: z.string().regex(FORMAT_DATE, "Format attendu : AAAA-MM-JJ.")
+});
+
+export { schemaNouvelleTache, schemaParamId, schemaParamDate };

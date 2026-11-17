@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { ajouter, terminer, supprimer, lister, listerALL, listerID, reporterTache, compteurTaches } from "./taches.js";
 import pool from './db.js';
-import { schemaNouvelleTache } from './schemas.js';
+import { schemaNouvelleTache, schemaParamId } from './schemas.js';
 import valider from './valider.js';
 
 
@@ -75,12 +75,11 @@ app.post('/reporter', async (requete, response) => {
 });
 
 
-app.get('/taches/:id', async (requete, response) => {
+app.get('/taches/:id',
+  valider(schemaParamId, 'params'),
+  async (requete, response) => {
   try {
-    const id = Number(requete.params.id);
-    if (Number.isNaN(id) || id < 0) {
-      return response.status(400).json({ error: "ID doit être un nombre positif et un nombre." });
-    }
+    const { id } = requete.params;
     const tache = await listerID(id);
     if (!tache) {
       return response.status(404).json({ error: "Tâche introuvable."});
@@ -126,12 +125,12 @@ app.get('/calendrier', async (requete, response) => {
   }
 });
 
-app.patch('/taches/:id', async (requete, response) => {
+app.patch('/taches/:id',
+  valider(schemaParamId, 'params'),
+  async (requete, response) => {
   try {
-    const id = Number(requete.params.id);
-    if (Number.isNaN(id) || id < 0) {
-      return response.status(400).json({ error: "ID doit être un nombre positif et un nombre." });
-    }
+    const { id } = requete.params;
+
     const tacheModifie = await terminer(id);
     if (!tacheModifie) {
       return response.status(404).json({ error: "Tâche introuvable."});
@@ -142,12 +141,12 @@ app.patch('/taches/:id', async (requete, response) => {
   }
 }); // Pour tester curl -i -w "\n" -X PATCH http://localhost:3001/taches/mettre id à modifier
 
-app.delete('/taches/:id', async (requete, response) => {
+app.delete('/taches/:id',
+  valider(schemaParamId, 'params'),
+  async (requete, response) => {
   try {
-    const id = Number(requete.params.id);
-    if (Number.isNaN(id) || id < 0) {
-      return response.status(400).json({ error: "ID doit être un nombre positif et un nombre." });
-    }
+    const { id } = requete.params;
+    
     const tacheSupprimer = await supprimer(id);
     if (!tacheSupprimer) {
       return response.status(404).json({ error: "Tâche introuvable"});
